@@ -1,16 +1,16 @@
 #include <stdio.h>
 
-//extern int all_files;
-//
-//void sub(void)
-//{
-//	all_files = 10;
-//}
+extern int all_files;
 
-
-extern int sum;
-
-int sum1(void)
+void sub(void)
 {
-	sum = sum + 1;
+	all_files = 10;
 }
+
+
+//extern int sum;
+//
+//int sum1(void)
+//{
+//	sum = sum + 1;
+//}
