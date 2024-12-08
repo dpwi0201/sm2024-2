@@ -56,7 +56,7 @@ int board_initBoard(void)
     shark_position = SHARK_INITPOS;
 // ----- EX. 5 : shark ------------
 
-    //coin allocation , 20241207김예지
+    //coin allocation 
     for (i=0;i<N_COINPOS;i++) 
     {
     	while(coin_value[i] == 0)
