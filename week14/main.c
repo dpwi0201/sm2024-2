@@ -29,8 +29,6 @@ char player_name[N_PLAYER][MAX_CHARNAME];
 int player_coin[N_PLAYER];
 int player_status[N_PLAYER]; //0 - live, 1 - die, 2 - end
 char player_statusString[3][MAX_CHARNAME] = {"LIVE", "DIE", "END"};
-int coin; //얻은 코인 개수
-int cycle; //모든 플레이어가 한 번씩 주사위를 던졌을 때 1이 됨
 // ----- EX. 4 : player ------------
 
 // ----- EX. 3 : board ------------
@@ -111,7 +109,7 @@ void checkDie(void)
     int i;
     for (i=0;i<N_PLAYER;i++)
     {	
-		if(player_status[i] == PLAYERSTATUS_LIVE)
+		if(player_status[i] == PLAYERSTATUS_LIVE) //죽은 플레이어 다시 언급하지 않음, 완료한 플레이어는 checkDie하지 않음
         {
 			if (board_getBoardStatus(player_position[i]) == BOARDSTATUS_NOK)
 	        {
@@ -197,7 +195,7 @@ int main(int argc, const char * argv[]) {
     //step 2. : game start, turn loop
     do {
         int dieResult;
-        int coinResult;
+        int coinResult; //새롭게 얻은 코인 개수
         int dum;
 
 
@@ -207,6 +205,7 @@ int main(int argc, const char * argv[]) {
         if (player_status[turn] != PLAYERSTATUS_LIVE)
         {   
             turn = (turn + 1)%N_PLAYER;
+            //죽은 플레이어를 제외한 플레이어들이 모두 주사위 던진 후 상어 이동
             if (turn == 0)
             {
                 int shark_pos = board_stepShark();
@@ -242,15 +241,17 @@ int main(int argc, const char * argv[]) {
 
         
         //step 2-3. moving 
-        player_position[turn] = player_position[turn] + dieResult;
+        player_position[turn] = player_position[turn] + dieResult; //플레이어 위치
         printf("Die result %d, %s moved to %d!\n", dieResult, player_name[turn], player_position[turn]);
         
         //step 2-4. coin
-        coin = board_getBoardCoin(player_position[turn]);
-        if(coin != 0)
+        coinResult = board_getBoardCoin(player_position[turn]); //이동한 플레이어 위치에 있는 코인
+
+        //만일 플레이어 위치에 코인이 있다면 알리기
+        if(coinResult != 0)
         {
-            player_coin[turn] = player_coin[turn] + coin;
-            printf("Lucky! %s get %d coin!\n", player_name[turn], coin);
+            player_coin[turn] = player_coin[turn] + coinResult;
+            printf("=> Lucky! %s get %d coin!\n", player_name[turn], coinResult);
         }
         
         
@@ -262,6 +263,7 @@ int main(int argc, const char * argv[]) {
         }
 
 		
+        //세 플레이어 모두 죽거나, 완료했을 시 빠져나오기
 		if(player_status[0] != PLAYERSTATUS_LIVE && player_status[1] != PLAYERSTATUS_LIVE && player_status[2] != PLAYERSTATUS_LIVE)
 			break;
 

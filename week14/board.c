@@ -58,8 +58,8 @@ void board_printBoardStatus(void);
 static int board_coin[N_BOARD] = {0};
 static int board_status[N_BOARD]; //0 - OK, 1 - destroyed
 // ----- EX. 3 : board ------------
-int coin_pos[N_COINPOS] = {0};
-int coin_value[N_COINPOS] = {0};
+int coin_pos[N_COINPOS] = {0}; //동전 위치
+int coin_value[N_COINPOS] = {0}; //동전 값
 
 static int shark_position;
 
