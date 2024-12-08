@@ -30,6 +30,7 @@ int player_coin[N_PLAYER];
 int player_status[N_PLAYER]; //0 - live, 1 - die, 2 - end
 char player_statusString[3][MAX_CHARNAME] = {"LIVE", "DIE", "END"};
 int coin; //얻은 코인 개수
+int cycle; //모든 플레이어가 한 번씩 주사위를 던졌을 때 1이 됨
 // ----- EX. 4 : player ------------
 
 // ----- EX. 3 : board ------------
@@ -109,12 +110,15 @@ void checkDie(void)
 {
     int i;
     for (i=0;i<N_PLAYER;i++)
-    {
-        if (board_getBoardStatus(player_position[i]) == BOARDSTATUS_NOK)
+    {	
+		if(player_status[i] == PLAYERSTATUS_LIVE)
         {
-            printf("%s in pos %i has died!! (coin %i)\n", player_name[i], player_position[i], player_coin[i]);
-            player_status[i] = PLAYERSTATUS_DIE;
-        }
+			if (board_getBoardStatus(player_position[i]) == BOARDSTATUS_NOK)
+	        {
+	            printf("%s in pos %i has died!! (coin %i)\n", player_name[i], player_position[i], player_coin[i]);
+	            player_status[i] = PLAYERSTATUS_DIE;
+	        }
+    	}
     }
 }
 // ----- EX. 5 : shark ------------
@@ -196,15 +200,27 @@ int main(int argc, const char * argv[]) {
         int coinResult;
         int dum;
 
+
+
+
 // ----- EX. 4 : player ------------
         if (player_status[turn] != PLAYERSTATUS_LIVE)
-        {
+        {   
             turn = (turn + 1)%N_PLAYER;
+            if (turn == 0)
+            {
+                int shark_pos = board_stepShark();
+                printf("Shark moved to %i\n", shark_pos);
+                //check die
+                checkDie();
+            }
             continue;
         }
 
 // ----- EX. 4 : player ------------
-        
+
+
+
         //step 2-1. status printing
 // ----- EX. 3 : board ------------
         board_printBoardStatus();
@@ -225,7 +241,7 @@ int main(int argc, const char * argv[]) {
 
 
         
-        //step 2-3. moving //20241205 김예지
+        //step 2-3. moving 
         player_position[turn] = player_position[turn] + dieResult;
         printf("Die result %d, %s moved to %d!\n", dieResult, player_name[turn], player_position[turn]);
         
@@ -245,7 +261,12 @@ int main(int argc, const char * argv[]) {
             player_status[turn] = PLAYERSTATUS_END;
         }
 
+		
+		if(player_status[0] != PLAYERSTATUS_LIVE && player_status[1] != PLAYERSTATUS_LIVE && player_status[2] != PLAYERSTATUS_LIVE)
+			break;
+
         turn = (turn + 1)%N_PLAYER;
+
         
         if (turn == 0)
             {
@@ -254,6 +275,7 @@ int main(int argc, const char * argv[]) {
                 //check die
                 checkDie();
             }
+
 // ----- EX. 6 : game end ------------
     } while(game_end() == 0);
     
